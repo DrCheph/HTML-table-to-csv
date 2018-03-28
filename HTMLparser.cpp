@@ -3,7 +3,6 @@
 //  Excel converter
 //
 //  Created by Sam Ferguson on 2018-03-26.
-//  Copyright © 2018 Temole of Silence Studios. All rights reserved.
 //
 
 #include "HTMLparser.hpp"
