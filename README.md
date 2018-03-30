@@ -8,6 +8,9 @@ Set the name of the htm file you want to parse in the constructor like:
 
 HTMLparser myhtmlParser("filename");
 
+Set the tables from the file
+myhtmlParser.setTables();
+
 Then to extract the relevent line from the with setLine and adding your search term
 
 myhtmlParser.setLine("searchterm");
