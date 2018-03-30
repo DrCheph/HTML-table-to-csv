@@ -22,11 +22,10 @@ namespace SKFhtml {
         
     }
     
-    // get our relevent line from the file
-    void HTMLparser::setLine(string searchString){
-        
+    //get all tables from file
+    void HTMLparser::setTables(){
         //check to make sure there is something to search for
-        if(m_filename == "" || searchString == "")
+        if(m_filename == "")
             return;
         
         //open the file
@@ -37,19 +36,37 @@ namespace SKFhtml {
         if(input.is_open()){
             //string to hold line
             string line;
+            string templine;
             
             //loop to get each line of file
             while (!input.eof()){
                 
                 //gets lines of file, self advance with each output to line (second variable)
-                getline(input, line);
+                getline(input, templine);
                 
-                //cout line variable
-                size_t Found = line.find(searchString);
+                //find start of our table line variable
+                size_t Found = templine.find("<table");
                 
                 //if our search tearm is found in the string then extract our table
                 if(Found != string::npos){
-                    m_relLine = line;
+                    
+                    line.append(templine);
+                    
+                    Found = templine.find("</table");
+                    
+                    while(Found == string::npos){
+                        
+                        line.append(templine);
+                        
+                        getline(input, templine);
+                        
+                        Found = templine.find("</table");
+                        
+                    }
+                    
+                    line.append(templine);
+                    m_Tables.push_back(line);
+                    line = "";
                 }
                 
             }
@@ -57,6 +74,26 @@ namespace SKFhtml {
         }
         else{
             cout<< "could not create file: " << m_filename << endl;
+        }
+
+            
+    }
+    
+    // get our relevent line from the file
+    void HTMLparser::setLine(string searchString){
+        
+        if(searchString == "")
+            return;
+        
+        size_t Found;
+        
+        //string line2;
+        for(int i = 0; i<m_Tables.size(); i++){
+            Found = m_Tables[i].find(searchString);
+            
+            if(Found != string::npos){
+                m_relLine = m_Tables[i];
+            }
         }
     }
     
@@ -165,7 +202,7 @@ namespace SKFhtml {
     }
     
     //convert dates to week-month-day format only works if date is in format like "Mar 4, 2018"
-    void HTMLparser::convertDate(const int elNumb){
+    void HTMLparser::convertDate(const int elNumb, const int colStart){
         
         string month;
         string day;
@@ -180,7 +217,7 @@ namespace SKFhtml {
         
         //runn through all the columns
         
-        for(int i = 0; i<m_ColData.size(); i++){
+        for(int i = colStart; i<m_ColData.size(); i++){
             
             //set the date string
             string date = m_ColData[i][elNumb];
@@ -333,7 +370,7 @@ namespace SKFhtml {
                     }
                 }
                 
-                //calculate the total number of days since  september 5th 2017
+                //calculate the total number of days since September 5th 2017
                 totalDays = (16 * 8) - 1 + yearmult + imonth + iday;
                 
                 //translate that into number of weeks
@@ -360,28 +397,35 @@ namespace SKFhtml {
         return colData;
     }
     
+    vector<string> HTMLparser::getTables() const{
+        vector<string> Tables;
+        
+        Tables = m_Tables;
+        
+        return Tables;
+    }
+    
+    vector<string> HTMLparser::getColumns() const{
+        vector<string> Columns;
+        
+        Columns = m_Col;
+        
+        return Columns;
+    }
+    
+    int HTMLparser::getTotalColumns() const{
+        int TotalColumns;
+        
+        TotalColumns = m_ColNum;
+        
+        return TotalColumns;
+    }
+    
     //output our csv file
     void HTMLparser::printFile(const string outFileName, const int arr[], const int size, const int start){
         
         if(outFileName == "")
             return;
-        
-        //test code
-        //            for(int i = start; i<m_ColData.size(); i++){
-        //                for(int j = 0; j < size; j++){
-        //
-        //
-        //                    if(j == size - 1){
-        //                        cout<<m_ColData[i][arr[j]];
-        //                    }
-        //                    else{
-        //                        cout<<m_ColData[i][arr[j]]<<",";
-        //                    }
-        //
-        //                }
-        //                cout<<endl;
-        //            }
-        //
         
         //create the file
         ofstream outFile;

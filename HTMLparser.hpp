@@ -23,6 +23,7 @@ private:
     string m_relLine{""};
     int m_ColNum{0};
     vector<string> m_Col;
+    vector<string> m_Tables;
     vector<vector<string> > m_ColData;
     
 public:
@@ -31,6 +32,9 @@ public:
     
     //constructor
     HTMLparser(string filename);
+    
+    //get all tables from file
+    void setTables();
     
     // get our relevent line from the file takes a search term to find what that line is
     void setLine(string searchString);
@@ -42,10 +46,16 @@ public:
     void parseCol();
     
     //convert dates to week-month-day format only works if date is in format like "Mar 4, 2018" takes an int pointing to the cell number the date can be found in
-    void convertDate(const int elNumb);
+    void convertDate(const int elNumb, const int colStart);
     
     //return all the data extracted in a vector of string vectors
     vector<vector<string> > getColData() const;
+    
+    vector<string> getTables() const;
+    
+    vector<string> getColumns() const;
+    
+    int getTotalColumns() const;
     
     //output our csv file takes a name for the file, a pointer to an int array cointaining the cell numbers we want printed, the size of that array and what column to start printing at
     void printFile(const string outFileName, const int arr[], const int size, const int start);
